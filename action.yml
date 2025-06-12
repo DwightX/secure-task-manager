@@ -1,10 +1,12 @@
 name: 'Dwights demp action'
+
 description: 'Greet someone and record the time'
+
 inputs:
   person:
     description: 'The person to greet'
     required: true
-    default: 'User'
+    default: 'Dwight'
 runs:
   using: 'node16'
   main: 'src/index.js'
