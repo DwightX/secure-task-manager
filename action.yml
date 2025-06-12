@@ -1,0 +1,5 @@
+name: 'Dwights demp action'
+description: 'Greet someone and record the time'
+runs:
+  using: 'node16'
+  main: 'src/index.js'
