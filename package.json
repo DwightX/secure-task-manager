@@ -4,19 +4,21 @@
     "description": "Task manager for DevSecOps security testing",
     "main": "app.js",
     "scripts": {
-      "start": "node app.js",
-      "dev": "nodemon app.js",
-      "test": "echo \"Error: no test specified\" && exit 1"
+        "start": "node app.js",
+        "dev": "nodemon app.js",
+        "test": "NODE_ENV=test jest"
     },
     "dependencies": {
-      "express": "^4.18.2",
-      "sqlite3": "^5.1.6",
-      "bcrypt": "^5.1.0",
-      "express-session": "^1.17.3",
-      "lodash": "4.17.10",
-      "body-parser": "^1.20.2"
+        "bcrypt": "^5.1.0",
+        "body-parser": "^1.20.2",
+        "express": "^4.18.2",
+        "express-session": "^1.17.3",
+        "lodash": "4.17.10",
+        "sqlite3": "^5.1.6"
     },
     "devDependencies": {
-      "nodemon": "^3.0.1"
+        "jest": "^30.0.0",
+        "nodemon": "^3.0.1",
+        "supertest": "^7.1.1"
     }
-  }
+}

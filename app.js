@@ -17,8 +17,10 @@ const SECRET_KEY = "admin123password";
 // This version has known security issues
 
 // Database setup
-const db = new sqlite3.Database('./tasks.db');
-
+const db = new sqlite3.Database(
+    process.env.NODE_ENV === 'test' ? ':memory:' : './tasks.db'
+  );
+  
 // Initialize database tables
 db.serialize(() => {
     db.run(`CREATE TABLE IF NOT EXISTS users (
@@ -62,6 +64,20 @@ app.use(session({
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
+// Route to check server health
+app.get('/health', (req, res) => {  
+    db.get('SELECT 1', (err, row) => {
+      if (err) {
+        return res.status(500).send(err.message);
+      }
+      if (!row) {
+        return res.status(500).send('Database not reachable');
+      }
+      res.status(200).send('OK');  // Send 200 only after DB check succeeds
+    });
+  });
+  
+
 
 // VULNERABILITY 4: SQL Injection in login
 app.post('/login', (req, res) => {
@@ -228,9 +244,6 @@ app.get('/debug', (req, res) => {
     });
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    console.log(`Visit http://localhost:${PORT}`);
-});
+module.exports = {app,db}; // <- Export the app without listening
 
 // ===========================================
