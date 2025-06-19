@@ -4,7 +4,7 @@
     "description": "Task manager for DevSecOps security testing",
     "main": "app.js",
     "scripts": {
-        "start": "node app.js",
+        "start": "node server.js",
         "dev": "nodemon app.js",
         "test": "NODE_ENV=test jest"
     },
