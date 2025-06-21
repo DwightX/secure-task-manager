@@ -85,6 +85,8 @@ app.post('/login', (req, res) => {
     
     // DANGEROUS: Direct string concatenation - SQL injection vulnerability
     const query = `SELECT * FROM users WHERE username = ?`;
+    // const query = `SELECT * FROM users WHERE username = '${username}'`; allows SQL injection
+
         // FIX: Use parameterized queries to prevent SQL injection
         // Instead of concatenating user input directly into SQL (which gets executed as code),
         // use placeholders (?) and pass data separately so it's treated as data, not commands    
