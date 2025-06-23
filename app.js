@@ -64,6 +64,7 @@ app.use(session({
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
+
 // Route to check server health
 app.get('/health', (req, res) => {  
     db.get('SELECT 1', (err, row) => {
@@ -76,20 +77,19 @@ app.get('/health', (req, res) => {
       res.status(200).send('OK');  // Send 200 only after DB check succeeds
     });
   });
-  
-
 
 // VULNERABILITY 4: SQL Injection in login
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
     
     // DANGEROUS: Direct string concatenation - SQL injection vulnerability
-    const query = `SELECT * FROM users WHERE username = ?`;
-    // const query = `SELECT * FROM users WHERE username = '${username}'`; allows SQL injection
-
-        // FIX: Use parameterized queries to prevent SQL injection
-        // Instead of concatenating user input directly into SQL (which gets executed as code),
-        // use placeholders (?) and pass data separately so it's treated as data, not commands    
+    const query = `SELECT * FROM users WHERE username = '${username}'`;
+    
+    // FIX: Use parameterized queries to prevent SQL injection
+    // Instead of concatenating user input directly into SQL (which gets executed as code),
+    // use placeholders (?) and pass data separately so it's treated as data, not commands
+    // const query = `SELECT * FROM users WHERE username = ?`;
+    
     db.get(query, [username], (err, user) => {
         if (err) {
             return res.status(500).json({ error: 'Database error' });
