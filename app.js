@@ -65,7 +65,7 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Route to check server health
+// Route to check server health using the database
 app.get('/health', (req, res) => {  
     db.get('SELECT 1', (err, row) => {
       if (err) {
