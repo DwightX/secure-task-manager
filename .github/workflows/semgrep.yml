@@ -5,8 +5,7 @@ on:
     branches:
     - main
     - master
-    paths:
-    - .github/workflows/semgrep.yml
+    # Remove the 'paths:' section to scan on all pushes, not just workflow changes
   schedule:
   # random HH:MM to avoid a load spike on GitHub Actions at 00:00
   - cron: 26 17 * * *
@@ -17,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      # Add security-events permission for SARIF upload
+      security-events: write
     env:
       SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
     container:
