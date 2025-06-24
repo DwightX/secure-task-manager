@@ -5,7 +5,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latestym
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -34,23 +34,23 @@ jobs:
       - name: Log after npm audit
         run: echo "✅ npm audit completed"
 
-      # - name: Build Docker image
-      #   run: docker build -t my-app:${{ github.sha }} .
+      - name: Build Docker image
+        run: docker build -t my-app:${{ github.sha }} .
 
-      # - name: Log after Docker image build
-      #   run: echo "✅ Docker image build completed"
+      - name: Log after Docker image build
+        run: echo "✅ Docker image build completed"
 
-      # - name: Scan Docker image with Trivy
-      #   uses: aquasecurity/trivy-action@v0.6.0
-      #   with:
-      #     image-ref: my-app:${{ github.sha }}
-      #     severity: HIGH,CRITICAL
-      #     exit-code: 1
-      #     format: table
-      #     ignore-unfixed: true
+      - name: Scan Docker image with Trivy
+        uses: aquasecurity/trivy-action@v0.6.0
+        with:
+          image-ref: my-app:${{ github.sha }}
+          severity: HIGH,CRITICAL
+          exit-code: 1
+          format: table
+          ignore-unfixed: true
 
-      # - name: Log after Trivy scan
-      #   run: echo "✅ Trivy scan completed"
+      - name: Log after Trivy scan
+        run: echo "✅ Trivy scan completed"
 
       - name: Run custom action for Bruce
         uses: './'
