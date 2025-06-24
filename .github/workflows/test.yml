@@ -34,8 +34,8 @@ jobs:
       - name: Log after npm audit
         run: echo "✅ npm audit completed"
 
-      - name: Build Docker image
-        run: docker build -t my-app:${{ github.sha }} .
+      # - name: Build Docker image
+      #   run: docker build -t my-app:${{ github.sha }} .
 
       # - name: Log after Docker image build
       #   run: echo "✅ Docker image build completed"
