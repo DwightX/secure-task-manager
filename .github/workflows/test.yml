@@ -41,7 +41,7 @@ jobs:
         run: echo "✅ Docker image build completed"
 
       - name: Scan Docker image with Trivy
-        uses: aquasecurity/trivy-action@v0.6.0
+        uses: aquasecurity/trivy-action@master
         with:
           image-ref: my-app:${{ github.sha }}
           severity: HIGH,CRITICAL
