@@ -5,7 +5,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latestym
 
     steps:
       - name: Checkout code
@@ -21,6 +21,18 @@ jobs:
 
       - name: Run npm audit to check vulnerabilities
         run: npm audit --audit-level=moderate
+
+      - name: "Build Docker image"
+        run: docker build -t my-app:${{ github.sha }} .
+        
+      - name: Scan Docker image with Trivy
+        uses: aquasecurity/trivy-action@v0.6.0
+        with:
+          image-ref: security-app
+          severity: HIGH,CRITICAL
+          exit-code: 1
+          format: table
+          ignore-unfixed: true
 
       - name: Run custom action for Bruce
         uses: './'
