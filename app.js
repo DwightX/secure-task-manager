@@ -248,6 +248,25 @@ app.get('/debug', (req, res) => {
     });
 });
 
+// Test endpoints for ZAP scanning (remove in production)
+app.get('/test/search', (req, res) => {
+    const search = req.query.q || '';
+    // SQL injection vulnerability
+    const query = `SELECT * FROM tasks WHERE title LIKE '%${search}%'`;
+    db.all(query, (err, tasks) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json(tasks);
+    });
+});
+
+app.get('/test/xss', (req, res) => {
+    const input = req.query.input || '';
+    // XSS vulnerability
+    res.send(`<h1>Hello ${input}</h1>`);
+});
+
 module.exports = {app,db}; // <- Export the app without listening
 
 // ===========================================
