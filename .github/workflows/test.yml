@@ -3,6 +3,10 @@ name: Test
 on:
   push:
 
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -104,6 +108,7 @@ jobs:
           # rules_file_name: '.zap/rules.tsv'
           fail_action: false
           cmd_options: '-a'
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Log after ZAP scan
         run: echo "✅ ZAP scan completed"
