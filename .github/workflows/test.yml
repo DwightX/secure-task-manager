@@ -70,7 +70,9 @@ jobs:
       - name: Log after custom action Batman
         run: echo "✅ Custom action for Batman completed"
 
-      - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.12.0
+      - name: ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.12.0
         with:
-          target: 'https://www.zaproxy.org/'
+          target: 'http://localhost:3000'
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a'
