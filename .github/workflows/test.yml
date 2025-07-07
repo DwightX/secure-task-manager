@@ -102,7 +102,7 @@ jobs:
         with:
           target: 'http://localhost:3000'
           # rules_file_name: '.zap/rules.tsv'
-          fail-action: false
+          fail_action: false
           cmd_options: '-a'
 
       - name: Log after ZAP scan
