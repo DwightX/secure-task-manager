@@ -28,9 +28,9 @@ jobs:
       - name: Log after installing dependencies
         run: echo "✅ npm install completed"
 
-      # # - name: Run npm audit to check vulnerabilities
-      # #   run: npm audit --audit-level=moderate
-      # Will currently fail if vulnerabilities are found, but you can adjust the audit level as needed.
+      # Uncomment if you want to run npm audit
+      # - name: Run npm audit to check vulnerabilities
+      #   run: npm audit --audit-level=moderate
 
       - name: Log after npm audit
         run: echo "✅ npm audit completed"
@@ -49,10 +49,21 @@ jobs:
           exit-code: 0
           format: table
           ignore-unfixed: true
-          #  Using exit code 0 to ensure the workflow continues even if vulnerabilities are found.
 
       - name: Log after Trivy scan
         run: echo "✅ Trivy scan completed"
+
+      # Start the application container
+      - name: Start application container
+        run: |
+          docker run -d --name my-app-container -p 3000:3000 my-app:${{ github.sha }}
+          # Wait for application to be ready
+          sleep 30
+          # Verify the application is running
+          curl -f http://localhost:3000 || exit 1
+
+      - name: Log after starting application
+        run: echo "✅ Application started and verified"
 
       - name: Run custom action for Bruce
         uses: './'
@@ -70,9 +81,35 @@ jobs:
       - name: Log after custom action Batman
         run: echo "✅ Custom action for Batman completed"
 
-      - name: ZAP Baseline Scan
-        uses: zaproxy/action-baseline@v0.12.0
+      # Create ZAP directory and files
+      - name: Create ZAP directory
+        run: |
+          mkdir -p .zap
+          touch .zap/rules.tsv
+          chmod 755 .zap
+          chmod 644 .zap/rules.tsv
+
+      # # ZAP Baseline Scan (faster, good for CI/CD)
+      # - name: ZAP Baseline Scan
+      #   uses: zaproxy/action-baseline@v0.12.0
+      #   with:
+      #     target: 'http://localhost:3000'
+      #     cmd_options: '-a'
+
+      # Alternative: ZAP Full Scan (more comprehensive but slower)
+      - name: ZAP Full Scan
+        uses: zaproxy/action-full-scan@v0.12.0
         with:
           target: 'http://localhost:3000'
-          rules_file_name: '.zap/rules.tsv'
+          # rules_file_name: '.zap/rules.tsv'
           cmd_options: '-a'
+
+      - name: Log after ZAP scan
+        run: echo "✅ ZAP scan completed"
+
+      # Clean up
+      - name: Stop application container
+        if: always()
+        run: |
+          docker stop my-app-container || true
+          docker rm my-app-container || true
