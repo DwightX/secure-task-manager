@@ -97,7 +97,7 @@ jobs:
       #     cmd_options: '-a'
 
       # Alternative: ZAP Full Scan (more comprehensive but slower)
-      - name: ZAP Full Scan
+      - name: ZAP Full Scan Project
         uses: zaproxy/action-full-scan@v0.12.0
         with:
           target: 'http://localhost:3000'
