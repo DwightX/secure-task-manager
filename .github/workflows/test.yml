@@ -60,7 +60,7 @@ jobs:
       # Start the application container
       - name: Start application container
         run: |
-          docker run -d --name my-app-container -p 3000:3000 my-app:${{ github.sha }}
+          docker run -d --name my-app-container -p 3000:3000 -e MY_SECRET_KEY="${{ secrets.MY_SECRET_KEY }}" my-app:${{ github.sha }}
           # Wait for application to be ready
           sleep 30
           # Verify the application is running

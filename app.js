@@ -1,4 +1,5 @@
 // app.js - Main server file (INTENTIONALLY VULNERABLE)
+require('dotenv').config();
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcrypt');
@@ -7,11 +8,17 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const _ = require('lodash');
 
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // VULNERABILITY 1: Hardcoded secret
-const SECRET_KEY = "admin123password";
+const MY_SECRET_KEY = process.env.MY_SECRET_KEY
+
+if (!MY_SECRET_KEY) {
+    console.error('❌ MY_SECRET_KEY is not set! Exiting...');
+    process.exit(1);
+  }
 
 // VULNERABILITY 2: Vulnerable dependency (lodash 4.17.10)
 // This version has known security issues
@@ -48,7 +55,7 @@ app.use(express.static('public'));
 
 // VULNERABILITY 3: Insecure session configuration
 app.use(session({
-    secret: SECRET_KEY,
+    secret: MY_SECRET_KEY,
     resave: false,
     saveUninitialized: true,
     cookie: { 
@@ -245,7 +252,7 @@ app.get('/debug', (req, res) => {
     res.json({
         session: req.session,
         environment: process.env,
-        secret: SECRET_KEY
+        secret: MY_SECRET_KEY
     });
 });
 
