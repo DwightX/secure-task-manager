@@ -255,22 +255,26 @@ app.get('/dashboard', (req, res) => {
 // - How would you implement secure search functionality?
 // - What are the differences between SQL injection in different database systems?
 // DESIRED OUTCOME: Implement secure search with parameterized queries
+
 app.get('/api/tasks', (req, res) => {
     if (!req.session.userId) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
-    
+    console.log(req.session);
     const userId = req.session.userId;
     const search = req.query.search || '';
     
     // DANGEROUS: SQL injection vulnerability through search parameter
-    let query = `SELECT * FROM tasks WHERE user_id = ${userId}`;
+    let query = `SELECT * FROM tasks WHERE user_id = ?`;
+    let params = [userId];
+
     if (search) {
-        query += ` AND (title LIKE '%${search}%' OR description LIKE '%${search}%')`;
+        query += ` AND (title LIKE ? OR description LIKE ?)`;
+        params.push(`%${search}%`, `%${search}%`);
+        // Solution: Use parameterized queries to prevent SQL injection
     }
     query += ` ORDER BY created_at DESC`;
-    
-    db.all(query, (err, tasks) => {
+    db.all(query,params, (err, tasks) => {
         if (err) {
             return res.status(500).json({ error: 'Database error' });
         }
