@@ -144,48 +144,42 @@ app.get('/health', (req, res) => {
 // - What are the limitations of input validation as a defense mechanism?
 // - How would you implement database-level security controls?
 // DESIRED OUTCOME: Implement parameterized queries and proper input validation
-app.post('/login',(req, res) => {
+app.post('/login', (req, res) => {
     const { username, password } = req.body;
-    
-    // DANGEROUS: Direct string concatenation creates SQL injection vulnerability
-    // const query = `SELECT * FROM users WHERE username = '${username}'`;
     const query = `SELECT * FROM users WHERE username = ?`;
-    // Updated to paramterized query to prevent SQL injection
-
-
-    db.get(query,[username], (err, user) => {
+    db.get(query, [username], async (err, user) => {
         if (err) {
             return res.status(500).json({ error: 'Database error' });
         }
-        
+
         if (!user) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
-        
-        // VULNERABILITY 5: Plain Text Password Storage and Comparison
-        // LEARNING OBJECTIVE: Understand cryptographic security for password storage
-        // CURRENT ISSUE: Passwords stored and compared in plain text
-        // SECURITY IMPACT: Complete credential compromise if database is accessed
-        // ATTACK SCENARIOS:
-        // - Database dump reveals all user passwords immediately
-        // - Insider threats can access user accounts
-        // - Regulatory compliance violations (GDPR, CCPA, etc.)
-        // - Credential stuffing attacks using leaked passwords
-        // LEARNING QUESTIONS:
-        // - What's the difference between encryption and hashing?
-        // - Why are salt values important in password hashing?
-        // - How do you choose appropriate hashing algorithms and work factors?
-        // - What are rainbow tables and how do salts prevent them?
-        // DESIRED OUTCOME: Implement secure password hashing with bcrypt or similar
-        if (password === user.password) {
-            req.session.userId = user.id;
-            req.session.username = user.username;
-            res.json({ success: true });
-        } else {
-            res.status(401).json({ error: 'Invalid credentials' });
+        async function verifyPassword(plainPassword, hashedPassword) {
+            try {
+                const match = await bcrypt.compare(plainPassword, hashedPassword);
+                return match; // true if they match, false otherwise
+            } catch (error) {
+                console.error("Error verifying password:", error);
+                return false;
+            }
+        }
+        try {
+            const isMatch = await verifyPassword(password, user.password);
+            if (isMatch) {
+                req.session.userId = user.id;
+                req.session.username = user.username;
+                return res.json({ success: true });
+            } else {
+                return res.status(401).json({ error: 'Invalid credentials' });
+            }
+        } catch (error) {
+            console.error('Error during password verification:', error);
+            return res.status(500).json({ error: 'Internal server error' });
         }
     });
 });
+
 
 // VULNERABILITY 6: Insufficient Input Validation
 // LEARNING OBJECTIVE: Understand comprehensive input validation and sanitization
@@ -220,14 +214,23 @@ app.post('/register', (req, res) => {
     // - What's the purpose of password salting and how do you implement it?
     // - How would you migrate from plain text to hashed passwords?
     // DESIRED OUTCOME: Hash passwords before storing them in the database
-    const query = `INSERT INTO users (username, email, password) VALUES (?, ?, ?)`;
+
+    const saltRouds = 10;
+
+    bcrypt.genSalt(saltRouds, (err, salt) => {
+        bcrypt.hash(password, salt, (err, hash) => {
+
+            const query = `INSERT INTO users (username, email, password) VALUES (?, ?, ?)`;
     
-    db.run(query, [username, email, password], function(err) {
-        if (err) {
-            return res.status(400).json({ error: 'Username already exists' });
-        }
-        res.json({ message: 'Registration successful' });
-    });
+            db.run(query, [username, email, hash], function(err) {
+                if (err) {
+                    return res.status(400).json({ error: 'Username already exists' });
+                }
+                res.json({ message: 'Registration successful' });
+            });
+
+        });
+    })
 });
 
 app.get('/dashboard', (req, res) => {
