@@ -322,10 +322,10 @@ app.post('/api/tasks', (req, res) => {
     // DESIRED OUTCOME: Remove eval() and implement safe string processing
     try {
         // DANGEROUS: eval() with user input - enables arbitrary code execution
-        const sanitizedTitle = eval(`"${title.replace(/"/g, '\\"')}"`);
+        // const sanitizedTitle = title;
         
         const query = `INSERT INTO tasks (user_id, title, description) VALUES (?, ?, ?)`;
-        db.run(query, [userId, sanitizedTitle, description], function(err) {
+        db.run(query, [userId, title, description], function(err) {
             if (err) {
                 return res.status(500).json({ error: 'Failed to create task' });
             }
@@ -333,7 +333,7 @@ app.post('/api/tasks', (req, res) => {
             res.json({ 
                 id: this.lastID, 
                 message: 'Task created successfully',
-                title: sanitizedTitle 
+                title: title 
             });
         });
     } catch (error) {
