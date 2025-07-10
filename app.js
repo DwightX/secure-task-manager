@@ -366,12 +366,18 @@ app.put('/api/tasks/:id', (req, res) => {
     const userId = req.session.userId;
     
     // DANGEROUS: No authorization check - any user can modify any task
-    const query = `UPDATE tasks SET title = ?, description = ?, completed = ? WHERE id = ?`;
+    const query = `UPDATE tasks SET title = ?, description = ?, completed = ? WHERE id = ? AND user_id = ?`;
     
-    db.run(query, [title, description, completed, taskId], (err) => {
+    db.run(query, [title, description, completed, taskId, userId], (err) => {
         if (err) {
             return res.status(500).json({ error: 'Failed to update task' });
         }
+
+        if(this.changes === 0) {
+            return res.status(404).json({ error: 'Task not found' });
+
+        }
+
         res.json({ message: 'Task updated successfully' });
     });
 });
@@ -397,11 +403,15 @@ app.delete('/api/tasks/:id', (req, res) => {
     }
     
     const taskId = req.params.id;
+    const parsedId = Number(taskId);
+    const query = `DELETE FROM tasks WHERE id = ? AND user_id = ?`;
+    const userId = req.session.userId;
     
-    // DANGEROUS: SQL injection in DELETE operation
-    const query = `DELETE FROM tasks WHERE id = ${taskId}`;
+    if (!Number.isInteger(parsedId)) {
+        return res.status(400).json({ error: 'Invalid task ID' });
+    }
     
-    db.run(query, (err) => {
+    db.run(query,[taskId,userId], (err) => {
         if (err) {
             return res.status(500).json({ error: 'Failed to delete task' });
         }
