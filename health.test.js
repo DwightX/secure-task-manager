@@ -28,3 +28,15 @@ describe('Health Check', () => {
   });
 });
 
+describe('rate limiting', () => {
+  it('blocks requests after exceeding the limit', async () => {
+    for (let i = 0; i < 100; i++) {
+      const res = await request(app).get('/rate-limit-test');
+      expect(res.status).toBe(200);
+    }
+    const blockedRes = await request(app).get('/rate-limit-test');
+    expect(blockedRes.status).toBe(429);
+    expect(blockedRes.text).toContain('Too many requests');
+  });
+})
+

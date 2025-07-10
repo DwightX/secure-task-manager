@@ -7,9 +7,22 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const path = require('path');
 const _ = require('lodash');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per windowMs
+    message: 'Too many requests from this IP, please try again after 15 minutes.',
+    standardHeaders: true, // Add `RateLimit-*` headers to the response
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  });
+
+app.use('/rate-limit-test', limiter);
+
+
 
 // VULNERABILITY 1: Secrets Management
 // LEARNING OBJECTIVE: Understand proper secrets management and key rotation
@@ -447,8 +460,11 @@ app.post('/logout', (req, res) => {
 app.get('/test/search', (req, res) => {
     const search = req.query.q || '';
     // DANGEROUS: SQL injection vulnerability in test endpoint
-    const query = `SELECT * FROM tasks WHERE title LIKE '%${search}%'`;
-    db.all(query, (err, tasks) => {
+    const query = `SELECT * FROM tasks WHERE title LIKE ?`;
+    const params = [`%${search}%`];
+
+    
+    db.all(query,params, (err, tasks) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -456,11 +472,9 @@ app.get('/test/search', (req, res) => {
     });
 });
 
-app.get('/test/xss', (req, res) => {
-    const input = req.query.input || '';
-    // DANGEROUS: XSS vulnerability in test endpoint
-    res.send(`<h1>Hello ${input}</h1>`);
-});
+app.get('/rate-limit-test', (req, res) => {
+    res.json({ message: 'Request successful!' });
+  });
 
 // ADDITIONAL SECURITY ISSUES TO ADDRESS:
 // 
