@@ -410,8 +410,8 @@ app.delete('/api/tasks/:id', (req, res) => {
     if (!Number.isInteger(parsedId)) {
         return res.status(400).json({ error: 'Invalid task ID' });
     }
-    
-    db.run(query,[taskId,userId], (err) => {
+
+    db.run(query,[parsedId,userId], (err) => {
         if (err) {
             return res.status(500).json({ error: 'Failed to delete task' });
         }
@@ -425,30 +425,6 @@ app.post('/logout', (req, res) => {
             return res.status(500).json({ error: 'Failed to logout' });
         }
         res.json({ message: 'Logged out successfully' });
-    });
-});
-
-// VULNERABILITY 13: Information Disclosure through Debug Endpoints
-// LEARNING OBJECTIVE: Understand information disclosure vulnerabilities
-// CURRENT ISSUE: Debug endpoint exposes extremely sensitive system information
-// SECURITY IMPACT: Complete system compromise through information disclosure
-// ATTACK SCENARIOS:
-// - Credential theft: Expose database credentials and API keys
-// - Session hijacking: Access other users' session data
-// - System reconnaissance: Gather information for further attacks
-// - Privilege escalation: Use exposed secrets to access other systems
-// LEARNING QUESTIONS:
-// - What information should never be exposed in production?
-// - How do you implement secure debugging and monitoring?
-// - What are the risks of exposing environment variables?
-// - How would you design secure error handling and logging?
-// DESIRED OUTCOME: Remove debug endpoints and implement secure error handling
-app.get('/debug', (req, res) => {
-    // DANGEROUS: Exposes sensitive system information
-    res.json({
-        session: req.session,
-        environment: process.env,
-        secret: MY_SECRET_KEY
     });
 });
 
