@@ -14,15 +14,11 @@ const PORT = process.env.PORT || 3000;
 
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // Limit each IP to 100 requests per windowMs
-    message: 'Too many requests from this IP, please try again after 15 minutes.',
-    standardHeaders: true, // Add `RateLimit-*` headers to the response
-    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+    max: 100, 
+    message: 'Too many requests from this IP, please try again later',
+    standardHeaders: true,
+    legacyHeaders: false,
   });
-
-app.use('/rate-limit-test', limiter);
-
-
 
 // VULNERABILITY 1: Secrets Management
 // LEARNING OBJECTIVE: Understand proper secrets management and key rotation
@@ -471,6 +467,8 @@ app.get('/test/search', (req, res) => {
         res.json(tasks);
     });
 });
+
+app.use('/rate-limit-test', limiter);
 
 app.get('/rate-limit-test', (req, res) => {
     res.json({ message: 'Request successful!' });
