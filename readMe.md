@@ -20,7 +20,7 @@ This project simulates a task management application containing **intentional vu
 | -------- | --------------------------------------- |
 | Backend  | Node.js, Express, SQLite                |
 | Frontend | HTML, CSS, JavaScript                   |
-| Security | Semgrep (SAST), Trivy, OWASP ZAP (DAST) |
+| Security | Semgrep, Trivy, OWASP ZAP|
 
 ---
 
@@ -30,8 +30,8 @@ This project simulates a task management application containing **intentional vu
 
 | Workflow             | Purpose                                    | Tools Used                        |
 | -------------------- | ------------------------------------------ | --------------------------------- |
-| `semgrep.yml`        | Static code analysis (SAST)                | Semgrep                           |
-| `security-tests.yml` | Dynamic and dependency scanning; API tests | Trivy, OWASP ZAP, Jest, Supertest |
+| `semgrep.yml`        | Static code testing                        | Semgrep                           |
+| `security-tests.yml` | Dynamic dependency scanning; API tests | Trivy, OWASP ZAP, Jest, Supertest |
 
 ### Automated Checks
 
