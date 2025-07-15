@@ -4,7 +4,7 @@ A purposly insecure Node.js application built to demonstrate security testing, s
 
 ---
 
-## 📌 Overview
+## Overview
 
 This project simulates a task management application containing **intentional vulnerabilities** to show:
 
@@ -14,7 +14,7 @@ This project simulates a task management application containing **intentional vu
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 | Layer    | Tools & Frameworks                      |
 | -------- | --------------------------------------- |
@@ -24,7 +24,7 @@ This project simulates a task management application containing **intentional vu
 
 ---
 
-## 🔒 Security Automation
+## Security Automation
 
 ### CI/CD Workflows (GitHub Actions)
 
